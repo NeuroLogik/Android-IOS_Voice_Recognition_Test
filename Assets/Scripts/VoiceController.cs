@@ -27,19 +27,22 @@ public class VoiceController : MonoBehaviour
         TextToSpeech.instance.onDoneCallback = OnSpeakStop;
 
         CheckPermission();
+
+        CheckAndSetImg(leftIndex, LeftImg);
+        CheckAndSetImg(rightIndex, RightImg);
     }
 
     void CheckPermission()
     {
 #if PLATFORM_ANDROID
-        if(!Permission.HasUserAuthorizedPermission(Permission.Microphone))
+        if (!Permission.HasUserAuthorizedPermission(Permission.Microphone))
         {
             Permission.RequestUserPermission(Permission.Microphone);
         }
 #endif
     }
 
-#region Text to Speech
+    #region Text to Speech
 
     public void StartSpeaking(string message)
     {
@@ -61,12 +64,12 @@ public class VoiceController : MonoBehaviour
         Debug.Log("Talking stopped...");
     }
 
-#endregion
+    #endregion
 
-#region Speech to Text
+    #region Speech to Text
 
     public void StartListening()
-    { 
+    {
         SpeechToText.instance.StartRecording();
     }
 
@@ -86,13 +89,10 @@ public class VoiceController : MonoBehaviour
     {
         UIText.text = result;
 
-        //if(result.Contains("punto rosso"))
-        //{
-        //    CubeLeft.transform.Translate(0f, 1f, 0f);
-        //}
+        //CheckResults(result);
     }
 
-#endregion
+    #endregion
 
     void Setup(string code)
     {
@@ -104,30 +104,25 @@ public class VoiceController : MonoBehaviour
     {
         if (result == "punto rosso" || result == "Punto Rosso")
         {
-            leftIndex++;
-            leftIndex = Mathf.Clamp(leftIndex, 0, 9);
-            LeftImg.sprite = numbers[leftIndex];
+            CheckAndSetImg(++leftIndex, LeftImg);
         }
-
-        if (result == "punto blu" || result == "Punto Blu")
+        else if (result == "punto blu" || result == "Punto Blu")
         {
-            rightIndex++;
-            rightIndex = Mathf.Clamp(rightIndex, 0, 9);
-            RightImg.sprite = numbers[rightIndex];
+            CheckAndSetImg(++rightIndex, RightImg);
         }
-
-        if (result == "leva rosso" || result == "Leva Rosso")
+        else if (result == "leva rosso" || result == "Leva Rosso")
         {
-            leftIndex--;
-            leftIndex = Mathf.Clamp(leftIndex, 0, 9);
-            LeftImg.sprite = numbers[leftIndex];
+            CheckAndSetImg(--leftIndex, LeftImg);
         }
-
-        if (result == "leva blu" || result == "Leva Blu")
+        else if (result == "leva blu" || result == "Leva Blu")
         {
-            rightIndex--;
-            rightIndex = Mathf.Clamp(rightIndex, 0, 9);
-            RightImg.sprite = numbers[rightIndex];
+            CheckAndSetImg(--rightIndex, RightImg);
         }
+    }
+
+    void CheckAndSetImg(int index, Image image)
+    {
+        index = Mathf.Clamp(index, 0, 9);
+        image.sprite = numbers[index];
     }
 }
